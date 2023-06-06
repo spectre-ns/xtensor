@@ -3088,6 +3088,77 @@ namespace xt
         return f;
     }
 
+    namespace detail
+    {
+        template <class E1, class E2>
+        auto CalculateDiscontinuity(E1&& discontinuity, E2&&)
+        {
+            return discontinuity;
+        }
+
+        template <class E2>
+        auto CalculateDiscontinuity(xt::placeholders::xtuph, E2&& period)
+        {
+            return period / 2;
+        }
+    }
+
+    /**
+     * @brief Unwrap by taking the complement of large deltas with respect to the period
+     * @details https://numpy.org/doc/stable/reference/generated/numpy.unwrap.html
+     * @param p Input array.
+     * @param discontinuity Maximum discontinuity between values, default is period/2. Values below period/2
+     * are treated as if they were period/2. To have an effect different from the default, discont should
+     * belarger than period/2.
+     * @param axis Axis along which unwrap will operate, default is the last axis.
+     * @param period Size of the range over which the input wraps. By default, it is 2pi.
+     */
+    template <class E1, class E2 = xt::placeholders::xtuph, class E3 = double>
+    inline auto unwrap(
+        E1&& p,
+        E2 discontinuity = xnone(),
+        std::ptrdiff_t axis = -1,
+        E3 period = 2.0 * xt::numeric_constants<double>::PI
+    )
+    {
+        auto discont = detail::CalculateDiscontinuity(discontinuity, period);
+        using value_type = typename std::decay_t<E1>::value_type;
+        std::size_t saxis = normalize_axis(p.dimension(), axis);
+        auto dd = diff(p, 1, axis);
+        xstrided_slice_vector slice1(p.dimension(), all());
+        slice1[saxis] = range(1, xnone());
+        bool boundary_ambiguous = false;
+        E3 interval_high;
+        if (std::is_integral<value_type>::value)
+        {
+            interval_high = period / 2;
+            uint64_t rem = static_cast<uint64_t>(period) % 2;
+            boundary_ambiguous = (rem == 0);
+        }
+        else
+        {
+            interval_high = period / 2;
+            boundary_ambiguous = true;
+        }
+        auto interval_low = -interval_high;
+        auto ddmod = xt::eval(xt::fmod(xt::fmod(dd - interval_low, period) + period, period) + interval_low);
+        if (boundary_ambiguous)
+        {
+            // for `mask = (abs(dd) == period/2)`, the above line made
+            //`ddmod[mask] == -period/2`. correct these such that
+            //`ddmod[mask] == sign(dd[mask])*period/2`.
+            xt::xarray<value_type> xinterval_low = {interval_low};
+            auto boolmap = ddmod == xinterval_low & (dd > xt::zeros<double>({1}));
+            ddmod = xt::where(boolmap, interval_high, ddmod);
+        }
+        auto ph_correct = xt::eval(ddmod - dd);
+        ph_correct = xt::where(xt::abs(dd) < discont, xt::zeros<double>({1}), ph_correct);
+        xt::xarray<value_type> up(p);
+        strided_view(up, slice1) = strided_view(p, slice1)
+                                   + xt::cumsum(ph_correct, static_cast<std::ptrdiff_t>(saxis));
+        return up;
+    }
+
     /**
      * @ingroup basic_functions
      * @brief Returns the one-dimensional piecewise linear interpolant to a function with given discrete data
