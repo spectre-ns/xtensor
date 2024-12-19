@@ -30,6 +30,7 @@
 #include "xtensor/xstrided_view.hpp"
 #include "xtensor/xtensor.hpp"
 #include "xtensor/xview.hpp"
+#include "xtensor/xassign.hpp"
 
 namespace xt
 {
@@ -1692,5 +1693,15 @@ namespace xt
         };
 
         XT_ASSERT_THROW(const auto col = xt::col(arr, 0), std::invalid_argument);
+    }
+
+    TEST(xview, linearly_assign)
+    {
+        xtensor<float, 1> a = {1,2,3,4};
+        xtensor<float, 1> b = {5,6,7,8};
+        xtensor<float, 1> c = xtensor<float, 1>::from_shape(a);
+        auto v = xt::view(a + b, xt::all());
+        auto is_linear_assign = xt::xassign_traits<decltype(c), decltype(v)>::linear_assign(c, v, true);
+        EXPECT_TRUE(is_linear_assign);
     }
 }
