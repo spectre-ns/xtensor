@@ -102,6 +102,7 @@ concept stem = !is_leaf_v<T>;
 template<leaf E>
 void step(E&& e)
 {
+    //can we use steppers here???
     e.step();
 }
 
@@ -123,13 +124,22 @@ void execute(E&& /*e*/)
     //do nothing
 }
 
+//create a reference wrapper that forwards container interface and 
+//maintains const correctness.
+template<leaf E> 
+class leaf_wrapper
+{
+
+};
+
 TEST(xfunction_tuple_wrapper, wrap_func)
 {
     xt::xtensor<size_t, 1> a({1,2,3,4});
     xt::xtensor<size_t, 1> b({1,2,3,4});
     xt::xtensor<size_t, 1> result({0,0,0,0});
-    auto func = a + b;
-    auto flat = flatten_expression(func);
+    auto func = a + b + a + a + a + a;
+    auto func2 = func + func;
+    auto flat = flatten_expression(func2);
 
     for (size_t i = 0; i < 4; ++i)
     {
