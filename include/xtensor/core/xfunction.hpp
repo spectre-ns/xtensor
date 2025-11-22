@@ -353,6 +353,10 @@ namespace xt
 
         const functor_type& functor() const noexcept;
 
+        void eval();
+
+        const_reference get() const;
+
     private:
 
         template <std::size_t... I>
@@ -383,6 +387,8 @@ namespace xt
 
         void compute_cached_shape() const;
 
+
+        value_type m_value_cache;
         tuple_type m_e;
         functor_type m_f;
         mutable xfunction_cache<detail::promote_index<typename std::decay_t<CT>::shape_type...>> m_cache;
@@ -921,6 +927,24 @@ namespace xt
         };
         return accumulate(func, size_type(0), m_e);
     }
+
+    template <class F, class... CT>
+    inline void xfunction<F, CT...>::eval()
+    {
+        m_value_cache = std::apply(
+            [&](auto&... e)
+            {
+                return m_f(e.get()...);
+            },
+            m_e
+        );
+    }
+
+   template <class F, class... CT>
+   inline auto xfunction<F, CT...>::get() const -> const_reference
+   {
+       return m_value_cache;
+   }
 
     /*************************************
      * xfunction_iterator implementation *

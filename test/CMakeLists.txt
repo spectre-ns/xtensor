@@ -175,6 +175,7 @@ set(XTENSOR_TESTS
     test_xfunctor_adaptor.cpp
     test_xfixed.cpp
     test_xfft.cpp
+    test_xfunction_tuple_wrapper.cpp
     test_xhistogram.cpp
     test_xpad.cpp
     test_xindex_view.cpp

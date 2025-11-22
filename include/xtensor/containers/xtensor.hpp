@@ -137,9 +137,21 @@ namespace xt
         template <class E>
         xtensor_container& operator=(const xexpression<E>& e);
 
+        inline void step()
+        {
+            m_counter++;
+        }
+
+        inline auto get() const -> const_reference
+        {
+            return m_storage[m_counter];
+        }
+
+
     private:
 
         storage_type m_storage;
+        size_t m_counter = 0;
 
         storage_type& storage_impl() noexcept;
         const storage_type& storage_impl() const noexcept;

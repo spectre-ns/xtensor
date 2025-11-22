@@ -188,7 +188,7 @@ namespace xt
         {
             using expression_tag = xexpression_tag_t<E...>;
             using functor_type = F;
-            using type = select_xfunction_expression_t<expression_tag, functor_type, const_xclosure_t<E>...>;
+            using type = select_xfunction_expression_t<expression_tag, functor_type, xclosure_t<E>...>;
         };
 
         template <class F, class... E>

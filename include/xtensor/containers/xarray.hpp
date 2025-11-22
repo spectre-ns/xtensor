@@ -142,6 +142,10 @@ namespace xt
         template <class E>
         xarray_container& operator=(const xexpression<E>& e);
 
+        void step();
+
+        const_reference get() const;
+
     private:
 
         storage_type m_storage;
@@ -487,6 +491,18 @@ namespace xt
         this->mutable_layout() = rhs.layout();
         m_storage = std::move(rhs.storage());
         return *this;
+    }
+
+    template <class EC, layout_type L, class SC, class Tag>
+    inline void xarray_container<EC, L, SC, Tag>::step()
+    {
+        _counter++;
+    }
+    
+    template <class EC, layout_type L, class SC, class Tag>
+    inline auto xarray_container<EC, L, SC, Tag>::get() const -> const_reference
+    {
+        return m_storage[_counter];
     }
 
     /**
