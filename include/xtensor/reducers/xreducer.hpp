@@ -1100,6 +1100,7 @@ namespace xt
         using xexpression_type = typename xreducer_type::xexpression_type;
         using substepper_type = typename xexpression_type::const_stepper;
         using shape_type = typename xreducer_type::shape_type;
+        using flat_tuple = tuple_cat_types_t<std::tuple<self_type&>, typename substepper_type::flat_tuple>;
 
         xreducer_stepper(
             const xreducer_type& red,

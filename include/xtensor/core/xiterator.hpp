@@ -107,6 +107,7 @@ namespace xt
     {
     public:
 
+        using self_type = xstepper<C>;
         using storage_type = C;
         using subiterator_type = get_stepper_iterator<C>;
         using subiterator_traits = std::iterator_traits<subiterator_type>;
@@ -117,6 +118,7 @@ namespace xt
         using size_type = typename storage_type::size_type;
         using shape_type = typename storage_type::shape_type;
         using simd_value_type = xt_simd::simd_type<value_type>;
+        using flat_tuple = typename std::tuple<self_type&>;
 
         template <class requested_type>
         using simd_return_type = xt_simd::simd_return_type<value_type, requested_type>;
@@ -191,6 +193,7 @@ namespace xt
 
         using shape_type = typename xexpression_type::shape_type;
         using index_type = xindex_type_t<shape_type>;
+        using flat_tuple = typename std::tuple<self_type&>;
 
         xindexed_stepper() = default;
         xindexed_stepper(xexpression_type* e, size_type offset, bool end = false) noexcept;

@@ -451,6 +451,7 @@ namespace xt
         using pointer = typename xfunction_type::const_pointer;
         using size_type = typename xfunction_type::size_type;
         using difference_type = typename xfunction_type::difference_type;
+        using flat_tuple = tuple_cat_types_t<std::tuple<self_type&>, typename std::decay_t<CT>::const_stepper::flat_tuple...>;
 
         using shape_type = typename xfunction_type::shape_type;
 
@@ -476,6 +477,8 @@ namespace xt
         simd_return_type<T> step_simd();
 
         void step_leading();
+
+        
 
     private:
 

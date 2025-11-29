@@ -291,9 +291,9 @@ namespace xt
             conditional_t<is_const, typename raw_value_expression::const_stepper, typename raw_value_expression::stepper>;
         using flag_stepper = std::
             conditional_t<is_const, typename raw_flag_expression::const_stepper, typename raw_flag_expression::stepper>;
+        using flat_tuple = tuple_cat_types_t<std::tuple<self_type&>, typename value_stepper::flat_tuple, typename flag_stepper::flat_tuple>;
 
         xoptional_assembly_stepper(value_stepper vs, flag_stepper fs) noexcept;
-
 
         void step(size_type dim);
         void step_back(size_type dim);

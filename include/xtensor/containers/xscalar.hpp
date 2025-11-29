@@ -365,6 +365,7 @@ namespace xt
         using size_type = typename storage_type::size_type;
         using difference_type = typename storage_type::difference_type;
         using shape_type = typename storage_type::shape_type;
+        using flat_tuple = std::tuple<self_type&>;
 
         template <class requested_type>
         using simd_return_type = xt_simd::simd_return_type<value_type, requested_type>;

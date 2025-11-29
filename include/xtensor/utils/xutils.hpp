@@ -1050,6 +1050,28 @@ namespace xt
     template <class E, size_t N>
     using has_rank_t = typename has_rank<std::decay_t<E>, N>::type;
 
+
+    template<class...> struct tuple_cat_types;
+
+    template<>
+    struct tuple_cat_types<> {
+        using type = std::tuple<>;
+    };
+
+    template<class T>
+    struct tuple_cat_types<T> {
+        using type = T;
+    };
+
+    template<class... Ts, class... Us, class... Rest>
+    struct tuple_cat_types<std::tuple<Ts...>, std::tuple<Us...>, Rest...> {
+        using type = typename tuple_cat_types<
+            std::tuple<Ts..., Us...>, Rest...
+        >::type;
+    };
+
+    template<class... Ts>
+    using tuple_cat_types_t = typename tuple_cat_types<Ts...>::type;
 }
 
 #endif

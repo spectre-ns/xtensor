@@ -783,6 +783,7 @@ namespace xt
     {
     public:
 
+        using self_type = xview_stepper<is_const, CT, S...>;
         using view_type = std::conditional_t<is_const, const xview<CT, S...>, xview<CT, S...>>;
         using substepper_type = get_stepper<view_type>;
 
@@ -793,6 +794,7 @@ namespace xt
         using size_type = typename view_type::size_type;
 
         using shape_type = typename substepper_type::shape_type;
+        using flat_tuple = tuple_cat_types_t<std::tuple<self_type&>, typename substepper_type::flat_tuple>;
 
         xview_stepper() = default;
         xview_stepper(
